@@ -159,9 +159,13 @@ while game_on:
     else:
         print("The Dealer has Won!! Better luck next time, Player!")
     game_on = False
-print (f"Your bank balance is {bank.balance}")
-play_again = input ("Would you like to play another hand? (Y/N): ")
-if play_again.upper == 'Y':
-    game_on = True
-else:
-    print("Thanks for playing!!")
+    print (f"Your bank balance is {bank.balance}")
+    play_again = input ("Would you like to play another hand? (Y/N): ")
+    if play_again.upper() == 'Y':
+        for x in range (len(player.all_cards)):
+            player.remove_one()
+        for x in range (len(dealer.all_cards)):
+            dealer.remove_one()
+        game_on = True
+    else:
+        print("Thanks for playing!!")    
