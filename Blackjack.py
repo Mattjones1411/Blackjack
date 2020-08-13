@@ -98,6 +98,7 @@ new_deck = Deck()
 new_deck.shuffle()
 game_on = True
 print("Let's play some Blackjack!")
+print(f"Your bank balance is: {bank.balance}")
 while game_on:
     for x in range(2):
         player.add_cards(new_deck.deal_one())
@@ -110,8 +111,11 @@ while game_on:
     print (f"Pot = {pot}")
     player_hand_on = True
     while player_hand_on:
-        player_hand_value = player.hand_value()
         player_hand_ranks = player.hand_ranks()
+        if player.hand_value() > 21 and 'Ace' in player_hand_ranks:
+            player_hand_value = player.hand_value() - 10
+        else:
+            player_hand_value = player.hand_value()
         for card in player.all_cards:
             print(card)
         print(f" The value of your hand is {player_hand_value}")
@@ -123,10 +127,14 @@ while game_on:
                 player_hand_on == False
                 break
         else:
+            print ("You have gone BUST!!")
+            player_end_of_hand_value = 0
             player_hand_on == False
             break
     if 'Ace' in player_hand_ranks and player.hand_value() > 21:
-        player_end_of_hand_value = player.hand_value()
+        player_end_of_hand_value = player.hand_value() - 10
+    elif player_end_of_hand_value == 0:
+        pass
     else:
         player_end_of_hand_value = player.hand_value()
     dealer_hand_on = True
@@ -149,13 +157,17 @@ while game_on:
             print ("Dealer is Bust!!")
             dealer_end_of_hand_value = 0
             dealer_hand_on = False
-    print(f" The value of your hand is {player_hand_value}")
-    print(f" The value of the Dealer's is {dealer_hand_value}")
+    print(f" The value of your hand is {player_end_of_hand_value}")
+    print(f" The value of the Dealer's is {dealer_end_of_hand_value}")
     if player_end_of_hand_value > dealer_end_of_hand_value:
         print(f"{player.name} Wins!!!")
         bank.winnings(pot)
+    elif player_end_of_hand_value == 0:
+        print("The Dealer has Won!! Better luck next time, Player!")
     elif player_end_of_hand_value == dealer_end_of_hand_value:
         print("It's a Tie!!")
+        pot = pot * 0.5
+        bank.winnings(pot)
     else:
         print("The Dealer has Won!! Better luck next time, Player!")
     game_on = False
@@ -168,4 +180,4 @@ while game_on:
             dealer.remove_one()
         game_on = True
     else:
-        print("Thanks for playing!!")    
+        print("Thanks for playing!!")
