@@ -102,6 +102,7 @@ while game_on:
     print(f"Pot = {pot}")
     print(f"Your hand value is {player.true_hand_value()}")
     player_hand_on = True
+    # TODO pointless variable... while True
     while player_hand_on:
         if player.true_hand_value() == 21:
             print("You have 21!")
@@ -144,3 +145,30 @@ while game_on:
     else:
         game_on = False
         print("Thanks for playing!!")
+
+'''
+NEXT STEPS
+
+In Blackjack, there is something called a Shoe. This is a shuffled set of decks, usually 4 decks. Create a Shoe class.
+
+We now need to create a Blackjack Class. This will be the class in which the game is played. The Class should
+instantiate with a Shoe, and a Dealer.
+
+Here a Dealer should be a class that extends Player. A dealer is a Player, with an extra rule set.
+
+The Blackjack class should allow us to add in as many players as the table can fit (usually 6). They should all be able
+to play the game simultaneously, with separate tracked stacks. They should be able to stand up each round, and new
+players should be able to sit down. The players should play in order, and the dealer should then play at the end.
+
+Extra rules of Blackjack:
+    - Winner Winner, Chicken Dinner. When a player gets Blackjack they should win 3.5x their stake.
+    - Double Down. When a player plays the Double Down, they hit for only one card. They double their bet, and if they
+      win, the house matches this new stake. 
+    - Split. If a player has 2 cards in their hand, which are the same rank they should have the option to split. Both 
+      cards become the first card of a new hand, with their original stake on each. Both hands are played independently,
+      in order (right to left if looking into the table from the player's perspective). Either of these hands can then
+      split, if the aforementioned condition is met.
+      
+Observation. Start using Blackjack terminology (hit, stick, etc.), including using stake instead of pot. There is no
+communal pot in Blackjack.
+'''
