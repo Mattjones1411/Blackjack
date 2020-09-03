@@ -17,16 +17,18 @@ class Card:
         return self.rank + " of " + self.suit
 
 
-class Deck:
+class Shoe:
 
     def __init__(self):
-        self.all_cards = [Card(t[0], t[1]) for t in itertools.product(suits, value)]
+        self.deck = [Card(t[0], t[1]) for t in itertools.product(suits, value)]
+        self.number_of_decks = 4
+        self.shoe = self.deck * self.number_of_decks
 
     def shuffle(self):
-        random.shuffle(self.all_cards)
+        random.shuffle(self.shoe)
 
     def deal_one(self):
-        return self.all_cards.pop()
+        return self.shoe.pop()
 
 
 class Bank:
@@ -53,16 +55,16 @@ class Player:
 
     def __init__(self, name):
         self.name = name
-        self.all_cards = []
+        self.hand = []
 
     def add_cards(self, new_cards):
-        self.all_cards.append(new_cards)
+        self.hand.append(new_cards)
 
     def true_hand_value(self):
         card_values = 0
-        for hand_card in self.all_cards:
+        for hand_card in self.hand:
             card_values += hand_card.value
-        for hand_cards in self.all_cards:
+        for hand_cards in self.hand:
             if card_values < 12 and hand_cards.rank == 'Ace':
                 card_values += 10
             else:
@@ -82,23 +84,21 @@ def win_check(player_score, dealer_score):
         return False
 
 
-player = Player('Player')
+player = Player('Matt')
 dealer = Player('Dealer')
-bank = Bank("Player's Bank", 500)
-new_deck = Deck()
+bank = Bank("Matt's Bank", 500)
+new_deck = Shoe()
 new_deck.shuffle()
 game_on = True
 print("Let's play some Blackjack!")
-print(f"Your bank balance is: {bank.balance}")
+print(f"{bank.name} contains: {bank.balance}")
 while game_on:
     for x in range(2):
         player.add_cards(new_deck.deal_one())
         dealer.add_cards(new_deck.deal_one())
-    print(f"Dealer's Hand: Unknown Card, {dealer.all_cards[0]}")
-    print(f"Your Cards: {player.all_cards[0]},{player.all_cards[1]}")
+    print(f"Dealer's Hand: Unknown Card, {dealer.hand[0]}")
+    print(f"Your Cards: {player.hand[0]},{player.hand[1]}")
     pot = bank.bet()
-    print(f"Dealer's Hand: Unknown Card, {dealer.all_cards[0]}")
-    print(f"Your Cards: {player.all_cards[0]}, {player.all_cards[1]}")
     print(f"Pot = {pot}")
     print(f"Your hand value is {player.true_hand_value()}")
     player_hand_on = True
@@ -111,37 +111,37 @@ while game_on:
             decision = input("Would you like to draw another card?: ")
             if decision.upper() == 'Y':
                 player.add_cards(new_deck.deal_one())
-                for card in player.all_cards:
+                for card in player.hand:
                     print(card)
             else:
                 break
         else:
             break
     dealer_hand_on = True
-    print(f"Dealer's Hand: {dealer.all_cards[1]}, {dealer.all_cards[0]}")
+    print(f"Dealer's Hand: {dealer.hand[1]}, {dealer.hand[0]}")
     while dealer_hand_on:
         print(f" The value of the Dealer's is {dealer.true_hand_value()}")
         if 0 < dealer.true_hand_value() < 17:
             dealer.add_cards(new_deck.deal_one())
-            for card in dealer.all_cards:
+            for card in dealer.hand:
                 print(card)
         elif 17 <= dealer.true_hand_value() <= 21:
             break
         else:
             print("Dealer is Bust!!")
             break
-    print(f" The value of your hand is {player.true_hand_value()}")
-    print(f" The value of the Dealer's is {dealer.true_hand_value()}")
+    print(f" The value of {player.name}'s hand is {player.true_hand_value()}")
+    print(f" The value of the Dealer's hand is {dealer.true_hand_value()}")
     if win_check(player.true_hand_value(), dealer.true_hand_value()):
-        print("Well Done! You have beat the dealer!")
+        print(f"Well Done {player.name}! You have beat the dealer!")
         bank.winnings(pot)
     else:
-        print("The Dealer has Won!! Better luck next time, Player!")
-    print(f"Your bank balance is {bank.balance}")
+        print(f"The Dealer has Won!! Better luck next time, {player.name}!")
+    print(f"{bank.name} contains: {bank.balance}")
     play_again = input("Would you like to play another hand? (Y/N): ")
     if play_again.upper() == 'Y':
-        player.all_cards = []
-        dealer.all_cards = []
+        player.hand = []
+        dealer.hand = []
     else:
         game_on = False
         print("Thanks for playing!!")
