@@ -38,14 +38,22 @@ class Bank:
         self.name = name
 
     def bet(self):
-        amount = int(input('How much would you like to bet: '))
-        if amount <= bank.balance:
-            self.balance = self.balance - amount
-            return amount
-        elif amount > self.balance:
-            print("You do not have enough in your bank for that bet!")
-        else:
-            print('That is not a valid bet!')
+        while True:
+            try:
+                amount = int(input('How much would you like to bet: '))
+                if amount < 0:
+                    print("You must enter a positive number!")
+                    while amount <= 0:
+                        amount = int(input('How much would you like to bet: '))
+                if amount <= bank.balance:
+                    self.balance = self.balance - amount
+                    return amount
+                elif amount > self.balance:
+                    print("You do not have enough in your bank for that bet!")
+                else:
+                    print('That is not a valid bet!')
+            except ValueError:
+                print("This is not a valid bet, try entering a number!")
 
     def winnings(self, active_pot):
         self.balance = self.balance + active_pot + active_pot
@@ -88,13 +96,13 @@ class Dealer(Player):
             card_values += playing_card.value
         if card_values < 17:
             while 0 < card_values < 17:
-                dealer.add_cards(new_shoe.deal_one())
-                for dealer_card in dealer.hand:
+                self.add_cards(new_shoe.deal_one())
+                for dealer_cards in self.hand:
                     print(dealer_card)
-                for hand_cards in self.hand:
+                for dealer_cards in self.hand:
                     if card_values < 12 and hand_cards.rank == 'Ace':
                         card_values += 10
-                for playing_card in self.hand:
+                for dealer_cards in self.hand:
                     card_values += playing_card.value
         else:
             pass
