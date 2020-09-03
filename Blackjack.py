@@ -25,10 +25,10 @@ class Shoe:
         self.shoe = self.deck * self.number_of_decks
 
     def shuffle(self):
-        random.shuffle(self.deck)
+        random.shuffle(self.shoe)
 
     def deal_one(self):
-        return self.deck.pop()
+        return self.shoe.pop()
 
 
 class Bank:
@@ -73,12 +73,6 @@ class Player:
             return 0
         else:
             return card_values
-
-
-class Blackjack:
-    def __init__(self):
-        self.dealer = Player('Dealer')
-        self.shoe = Shoe()
 
 
 def win_check(player_score, dealer_score):
