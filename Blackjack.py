@@ -75,6 +75,35 @@ class Player:
             return card_values
 
 
+class Dealer(Player):
+    def __init__(self, name):
+        super().__init__(name)
+        self.name = name
+        self.hand = []
+
+    def play_hand(self):
+        card_values = 0
+        for playing_card in self.hand:
+            card_values += playing_card.value
+        if card_values < 17:
+            while 0 < card_values < 17:
+                dealer.add_cards(new_shoe.deal_one())
+                for dealer_card in dealer.hand:
+                    print(dealer_card)
+                for hand_cards in self.hand:
+                    if card_values < 12 and hand_cards.rank == 'Ace':
+                        card_values += 10
+                for playing_card in self.hand:
+                    card_values += playing_card.value
+        else:
+            pass
+        if card_values <= 21:
+            return card_values
+        else:
+            print("Dealer is Bust!!")
+            return 0
+
+
 def win_check(player_score, dealer_score):
     if player_score == 0:
         return False
@@ -85,17 +114,18 @@ def win_check(player_score, dealer_score):
 
 
 player = Player('Matt')
-dealer = Player('Dealer')
+dealer = Dealer('Dealer')
 bank = Bank("Matt's Bank", 500)
 new_deck = Shoe()
-new_deck.shuffle()
+new_shoe = Shoe()
+new_shoe.shuffle()
 game_on = True
 print("Let's play some Blackjack!")
 print(f"{bank.name} contains: {bank.balance}")
 while game_on:
     for x in range(2):
-        player.add_cards(new_deck.deal_one())
-        dealer.add_cards(new_deck.deal_one())
+        player.add_cards(new_shoe.deal_one())
+        dealer.add_cards(new_shoe.deal_one())
     print(f"Dealer's Hand: Unknown Card, {dealer.hand[0]}")
     print(f"Your Cards: {player.hand[0]},{player.hand[1]}")
     pot = bank.bet()
@@ -109,26 +139,15 @@ while game_on:
         elif 0 < player.true_hand_value() < 21:
             decision = input("Would you like to draw another card?: ")
             if decision.upper() == 'Y':
-                player.add_cards(new_deck.deal_one())
+                player.add_cards(new_shoe.deal_one())
                 for card in player.hand:
                     print(card)
             else:
                 break
         else:
             break
-    dealer_hand_on = True
     print(f"Dealer's Hand: {dealer.hand[1]}, {dealer.hand[0]}")
-    while dealer_hand_on:
-        print(f" The value of the Dealer's is {dealer.true_hand_value()}")
-        if 0 < dealer.true_hand_value() < 17:
-            dealer.add_cards(new_deck.deal_one())
-            for card in dealer.hand:
-                print(card)
-        elif 17 <= dealer.true_hand_value() <= 21:
-            break
-        else:
-            print("Dealer is Bust!!")
-            break
+    dealer.play_hand()
     print(f" The value of {player.name}'s hand is {player.true_hand_value()}")
     print(f" The value of the Dealer's hand is {dealer.true_hand_value()}")
     if win_check(player.true_hand_value(), dealer.true_hand_value()):
