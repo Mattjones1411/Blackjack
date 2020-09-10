@@ -91,23 +91,12 @@ class Dealer(Player):
         self.hand = []
 
     def play_hand(self):
-        card_values = 0
-        for playing_card in self.hand:
-            card_values += playing_card.value
-        if card_values < 17:
-            while 0 < card_values < 17:
-                self.add_cards(new_shoe.deal_one())
-                for dealer_cards in self.hand:
-                    print(dealer_card)
-                for dealer_cards in self.hand:
-                    if card_values < 12 and hand_cards.rank == 'Ace':
-                        card_values += 10
-                for dealer_cards in self.hand:
-                    card_values += playing_card.value
-        else:
-            pass
-        if card_values <= 21:
-            return card_values
+        while 1 < self.true_hand_value() < 17:
+            self.add_cards(new_shoe.deal_one())
+            for dealer_cards in self.hand:
+                print(dealer_cards)
+        if self.true_hand_value() <= 21:
+            return self.true_hand_value()
         else:
             print("Dealer is Bust!!")
             return 0
@@ -116,6 +105,8 @@ class Dealer(Player):
 def win_check(player_score, dealer_score):
     if player_score == 0:
         return False
+    elif player_score == 21:
+        return True
     elif player_score > dealer_score:
         return True
     else:
