@@ -116,7 +116,6 @@ def win_check(player_score, dealer_score):
 player = Player('Matt')
 dealer = Dealer('Dealer')
 bank = Bank("Matt's Bank", 500)
-new_deck = Shoe()
 new_shoe = Shoe()
 new_shoe.shuffle()
 game_on = True
@@ -132,7 +131,6 @@ while game_on:
     print(f"Pot = {pot}")
     print(f"Your hand value is {player.true_hand_value()}")
     player_hand_on = True
-    # TODO pointless variable... while True
     while player_hand_on:
         if player.true_hand_value() == 21:
             print("You have 21!")
