@@ -139,25 +139,30 @@ class Blackjack:
         removal = input("Would any players like to stand up? (Y/N): ")
         while removal.upper() == "Y":
             for player in self.table:
-                print(f"{str(player)} is at seat {self.table.index(player)}")
+                print(f"{str(player)} is at seat {self.table.index(player)+1}")
             player_removal = int(input("Which player would like to stand up? (Seat Number): "))
-            self.table.pop(player_removal)
+            self.table.pop(player_removal-1)
             removal = input("Would another player like to stand up? (Y/N): ")
 
     def add_player(self):
         if len(self.table) < 6:
-            number_of_players = 0
-            while not 0 < number_of_players <= 6:
+            number_of_players = len(self.table)
+            while number_of_players == 0:
                 number_of_players = int(input("How many players would like to play? (1-6): "))
-            try:
-                if number_of_players <= 6:
+            if len(self.table) == 0:
+                try:
                     for size in range(number_of_players):
                         name = input("What is the name of the player?: ")
                         self.table.append(Player(name.capitalize(), 1000))
-                else:
-                    print("Only 6 players can play at this table!")
-            except ValueError:
-                print("Please enter an integer!")
+                except ValueError:
+                    print("Please enter an integer!")
+            else:
+                new_players = 0
+                while new_players + len(self.table) <= 6 and new_players > 0:
+                    new_players = int(input("How many players would like to play? (1-6): "))
+                for players in range(new_players):
+                    name = input("What is the name of the player?: ")
+                    self.table.append(Player(name.capitalize(), 1000))
         else:
             print("Sorry, the table is full!")
 
