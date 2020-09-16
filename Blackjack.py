@@ -132,7 +132,7 @@ class Blackjack:
 
     def __init__(self):
         self.shoe = Shoe()
-        self.dealer = Dealer(Dealer)
+        self.dealer = Dealer("Dealer")
         self.table = []
 
     def remove_players(self):
@@ -144,22 +144,25 @@ class Blackjack:
             self.table.pop(player_removal-1)
             removal = input("Would another player like to stand up? (Y/N): ")
 
-    def add_player(self):
+    def add_players(self):
         if len(self.table) < 6:
             number_of_players = len(self.table)
-            while number_of_players == 0:
-                number_of_players = int(input("How many players would like to play? (1-6): "))
             if len(self.table) == 0:
                 try:
-                    for size in range(number_of_players):
-                        name = input("What is the name of the player?: ")
-                        self.table.append(Player(name.capitalize(), 1000))
+                    while number_of_players == 0:
+                        number_of_players = int(input("How many players would like to play? (1-6): "))
                 except ValueError:
                     print("Please enter an integer!")
+                for size in range(number_of_players):
+                    name = input("What is the name of the player?: ")
+                    self.table.append(Player(name.capitalize(), 1000))
             else:
                 new_players = 0
                 while new_players + len(self.table) <= 6 and new_players > 0:
-                    new_players = int(input("How many players would like to play? (1-6): "))
+                    try:
+                        new_players = int(input("How many more players would like to play? (1-6): "))
+                    except ValueError:
+                        print("Please enter an integer!")
                 for players in range(new_players):
                     name = input("What is the name of the player?: ")
                     self.table.append(Player(name.capitalize(), 1000))
@@ -169,8 +172,7 @@ class Blackjack:
     def play_round(self):
         for n in range(2):
             self.dealer.add_cards(new_game.shoe.deal_one())
-        for players in self.table:
-            for n in range(2):
+            for players in self.table:
                 players.add_cards(new_game.shoe.deal_one())
         for players in self.table:
             players.bet()
@@ -183,13 +185,13 @@ class Blackjack:
                 players.winnings()
             elif not win_check(players.true_hand_value(), self.dealer.true_hand_value()):
                 print(f"Sorry {players.name}, you have lost your stake!")
-        for players in self.table:
-            players.hand = []
+        for player in self.table:
+            player.hand = []
         self.dealer.hand = []
 
     def play_game(self):
         print("Welcome to Blackjack!")
-        self.add_player()
+        self.add_players()
         self.shoe.shuffle()
         game_on = True
         while game_on:
@@ -200,7 +202,7 @@ class Blackjack:
                 self.remove_players()
                 new_player = input("Would any new players like to sit? (Y/N): ")
                 if new_player.upper() == "Y":
-                    self.add_player()
+                    self.add_players()
                 replay = input("Would you like to play another hand? (Y/N): ")
                 if replay.upper() == 'Y':
                     pass
