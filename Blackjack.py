@@ -172,19 +172,19 @@ class Blackjack:
     def play_round(self):
         for n in range(2):
             self.dealer.add_cards(new_game.shoe.deal_one())
-            for players in self.table:
-                players.add_cards(new_game.shoe.deal_one())
-        for players in self.table:
-            players.bet()
-        for players in self.table:
+            for player in self.table:
+                player.add_cards(new_game.shoe.deal_one())
+        for player in self.table:
+            player.bet()
+        for player in self.table:
             print(f"Dealer's Hand: Unknown Card, {new_game.dealer.hand[0]}")
-            players.play_hand()
+            player.play_hand()
         self.dealer.play_hand()
-        for players in self.table:
-            if win_check(players.true_hand_value(), self.dealer.true_hand_value()):
-                players.winnings()
-            elif not win_check(players.true_hand_value(), self.dealer.true_hand_value()):
-                print(f"Sorry {players.name}, you have lost your stake!")
+        for player in self.table:
+            if win_check(player.true_hand_value(), self.dealer.true_hand_value()):
+                player.winnings()
+            elif not win_check(player.true_hand_value(), self.dealer.true_hand_value()):
+                print(f"Sorry {player.name}, you have lost your stake!")
         for player in self.table:
             player.hand = []
         self.dealer.hand = []
@@ -197,9 +197,9 @@ class Blackjack:
         while game_on:
             if len(self.table) > 0:
                 self.play_round()
-                for players in self.table:
-                    print(f"{players.name} Balance: {players.balance}")
-                self.remove_players()
+                for player in self.table:
+                    print(f"{player.name} Balance: {player.balance}")
+                self.remove_player()
                 new_player = input("Would any new players like to sit? (Y/N): ")
                 if new_player.upper() == "Y":
                     self.add_players()
