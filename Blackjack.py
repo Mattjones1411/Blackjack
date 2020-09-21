@@ -47,10 +47,9 @@ class Player:
 
     def true_hand_value(self):
         card_values = 0
-        for hand_card in self.hand:
-            card_values += hand_card.value
-        for hand_cards in self.hand:
-            if card_values < 12 and hand_cards.rank == 'Ace':
+        for card in self.hand:
+            card_values += card.value
+            if card_values < 12 and card.rank == 'Ace':
                 card_values += 10
             else:
                 pass
@@ -61,8 +60,8 @@ class Player:
 
     def play_hand(self):
         print(f"{self.name}'s turn!")
-        for card_in_hand in self.hand:
-            print(card_in_hand)
+        for card in self.hand:
+            print(card)
         player_hand_on = True
         while player_hand_on:
             if self.true_hand_value() == 21:
@@ -72,8 +71,8 @@ class Player:
                 player_decision = input("Would you like to draw another card?: ")
                 if player_decision.upper() == 'Y':
                     self.add_cards(new_game.shoe.deal_one())
-                    for card_in_hand in self.hand:
-                        print(card_in_hand)
+                    for card in self.hand:
+                        print(card)
                     print(f"{self.name}'s hand value is: {self.true_hand_value()}")
                 else:
                     break
@@ -113,13 +112,13 @@ class Dealer(Player):
 
     def play_hand(self):
         print("Dealer's Turn")
-        for dealer_cards in self.hand:
-            print(dealer_cards)
+        for card in self.hand:
+            print(card)
         print(f"Dealer hand value is {self.true_hand_value()}")
         while 1 < self.true_hand_value() < 17:
             self.add_cards(new_game.shoe.deal_one())
-            for dealer_cards in self.hand:
-                print(dealer_cards)
+            for card in self.hand:
+                print(card)
             print(f"Dealer hand value is {self.true_hand_value()}")
         if self.true_hand_value() <= 21:
             return self.true_hand_value()
@@ -199,7 +198,7 @@ class Blackjack:
                 self.play_round()
                 for player in self.table:
                     print(f"{player.name} Balance: {player.balance}")
-                self.remove_player()
+                self.remove_players()
                 new_player = input("Would any new players like to sit? (Y/N): ")
                 if new_player.upper() == "Y":
                     self.add_players()
