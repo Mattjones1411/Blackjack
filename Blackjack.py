@@ -182,7 +182,7 @@ class Blackjack:
         for player in self.table:
             if win_check(player.true_hand_value(), self.dealer.true_hand_value()):
                 player.winnings()
-            elif not win_check(player.true_hand_value(), self.dealer.true_hand_value()):
+            else:
                 print(f"Sorry {player.name}, you have lost your stake!")
         for player in self.table:
             player.hand = []
