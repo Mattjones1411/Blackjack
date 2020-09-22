@@ -58,6 +58,10 @@ class Player:
         else:
             return card_values
 
+    def winner_winner(self):
+        if self.hand[0].value + self.hand[1].value == 21:
+            return True
+
     def play_hand(self):
         print(f"{self.name}'s turn!")
         for card in self.hand:
@@ -99,8 +103,13 @@ class Player:
                 print("This is not a valid bet, try entering a number!")
 
     def winnings(self):
-        print(f"Congratulations {self.name}! You have won double your stake!")
-        self.balance = self.balance + self.stake + self.stake
+        if self.winner_winner():
+            print("Winner Winner Chicken Dinner!!!")
+            print(f"Congratulations {self.name}! You have won 3.5x your stake!")
+            self.balance = self.balance + (3.5 * self.stake)
+        else:
+            print(f"Congratulations {self.name}! You have won double your stake!")
+            self.balance = self.balance + self.stake + self.stake
 
 
 class Dealer(Player):
