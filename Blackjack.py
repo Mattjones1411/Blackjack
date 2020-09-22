@@ -68,12 +68,20 @@ class Player:
                 print("You have 21!")
                 break
             elif 0 < self.true_hand_value() < 21:
-                player_decision = input("Would you like to draw another card?: ")
-                if player_decision.upper() == 'Y':
+                player_decision = input("Hit (H), Double Down (DD) or Stick (S): ")
+                if player_decision.upper() == 'H':
                     self.add_cards(new_game.shoe.deal_one())
                     for card in self.hand:
                         print(card)
                     print(f"{self.name}'s hand value is: {self.true_hand_value()}")
+                elif player_decision.upper() == 'DD':
+                    self.add_cards(new_game.shoe.deal_one())
+                    for card in self.hand:
+                        print(card)
+                    print(f"{self.name}'s hand value is: {self.true_hand_value()}")
+                    self.balance -= self.stake
+                    self.stake *= 2
+                    break
                 else:
                     break
             else:
@@ -88,7 +96,7 @@ class Player:
                     while amount <= 0:
                         amount = int(input(f'{self.name} how much would you like to bet: '))
                 if amount <= self.balance:
-                    self.balance = self.balance - amount
+                    self.balance -= amount
                     self.stake = amount
                     break
                 elif amount > self.balance:
@@ -138,9 +146,9 @@ class Blackjack:
         removal = input("Would any players like to stand up? (Y/N): ")
         while removal.upper() == "Y":
             for player in self.table:
-                print(f"{str(player)} is at seat {self.table.index(player)+1}")
+                print(f"{str(player)} is at seat {self.table.index(player) + 1}")
             player_removal = int(input("Which player would like to stand up? (Seat Number): "))
-            self.table.pop(player_removal-1)
+            self.table.pop(player_removal - 1)
             removal = input("Would another player like to stand up? (Y/N): ")
 
     def add_players(self):
