@@ -31,49 +31,25 @@ class Shoe:
         return self.shoe.pop()
 
 
-class Bank:
-
-    def __init__(self, name, balance):
-        self.balance = balance
-        self.name = name
-
-    def bet(self):
-        while True:
-            try:
-                amount = int(input('How much would you like to bet: '))
-                if amount < 0:
-                    print("You must enter a positive number!")
-                    while amount <= 0:
-                        amount = int(input('How much would you like to bet: '))
-                if amount <= bank.balance:
-                    self.balance = self.balance - amount
-                    return amount
-                elif amount > self.balance:
-                    print("You do not have enough in your bank for that bet!")
-                else:
-                    print('That is not a valid bet!')
-            except ValueError:
-                print("This is not a valid bet, try entering a number!")
-
-    def winnings(self, active_pot):
-        self.balance = self.balance + active_pot + active_pot
-
-
 class Player:
 
-    def __init__(self, name):
+    def __init__(self, name, balance=1000):
         self.name = name
         self.hand = []
+        self.balance = balance
+        self.stake = 0
+
+    def __str__(self):
+        return self.name
 
     def add_cards(self, new_cards):
         self.hand.append(new_cards)
 
     def true_hand_value(self):
         card_values = 0
-        for hand_card in self.hand:
-            card_values += hand_card.value
-        for hand_cards in self.hand:
-            if card_values < 12 and hand_cards.rank == 'Ace':
+        for card in self.hand:
+            card_values += card.value
+            if card_values < 12 and card.rank == 'Ace':
                 card_values += 10
             else:
                 pass
@@ -82,24 +58,158 @@ class Player:
         else:
             return card_values
 
+    def play_hand(self):
+        print(f"{self.name}'s turn!")
+        for card in self.hand:
+            print(card)
+        player_hand_on = True
+        while player_hand_on:
+            if self.true_hand_value() == 21:
+                print("You have 21!")
+                break
+            elif 0 < self.true_hand_value() < 21:
+                player_decision = input("Would you like to draw another card?: ")
+                if player_decision.upper() == 'Y':
+                    self.add_cards(new_game.shoe.deal_one())
+                    for card in self.hand:
+                        print(card)
+                    print(f"{self.name}'s hand value is: {self.true_hand_value()}")
+                else:
+                    break
+            else:
+                break
+
+    def bet(self):
+        while True:
+            try:
+                amount = int(input(f'{self.name} how much would you like to bet: '))
+                if amount < 0:
+                    print("You must enter a positive number!")
+                    while amount <= 0:
+                        amount = int(input(f'{self.name} how much would you like to bet: '))
+                if amount <= self.balance:
+                    self.balance = self.balance - amount
+                    self.stake = amount
+                    break
+                elif amount > self.balance:
+                    print("You do not have enough in your bank for that bet!")
+                else:
+                    print('That is not a valid bet!')
+            except ValueError:
+                print("This is not a valid bet, try entering a number!")
+
+    def winnings(self):
+        print(f"Congratulations {self.name}! You have won double your stake!")
+        self.balance = self.balance + self.stake + self.stake
+
 
 class Dealer(Player):
 
     def __init__(self, name):
-        super().__init__(name)
+        super().__init__(name, balance=0)
         self.name = name
         self.hand = []
 
     def play_hand(self):
+        print("Dealer's Turn")
+        for card in self.hand:
+            print(card)
+        print(f"Dealer hand value is {self.true_hand_value()}")
         while 1 < self.true_hand_value() < 17:
-            self.add_cards(new_shoe.deal_one())
-            for dealer_cards in self.hand:
-                print(dealer_cards)
+            self.add_cards(new_game.shoe.deal_one())
+            for card in self.hand:
+                print(card)
+            print(f"Dealer hand value is {self.true_hand_value()}")
         if self.true_hand_value() <= 21:
             return self.true_hand_value()
         else:
             print("Dealer is Bust!!")
             return 0
+
+
+class Blackjack:
+
+    def __init__(self):
+        self.shoe = Shoe()
+        self.dealer = Dealer("Dealer")
+        self.table = []
+
+    def remove_players(self):
+        removal = input("Would any players like to stand up? (Y/N): ")
+        while removal.upper() == "Y":
+            for player in self.table:
+                print(f"{str(player)} is at seat {self.table.index(player)+1}")
+            player_removal = int(input("Which player would like to stand up? (Seat Number): "))
+            self.table.pop(player_removal-1)
+            removal = input("Would another player like to stand up? (Y/N): ")
+
+    def add_players(self):
+        if len(self.table) < 6:
+            number_of_players = len(self.table)
+            if len(self.table) == 0:
+                try:
+                    while number_of_players == 0:
+                        number_of_players = int(input("How many players would like to play? (1-6): "))
+                except ValueError:
+                    print("Please enter an integer!")
+                for size in range(number_of_players):
+                    name = input("What is the name of the player?: ")
+                    self.table.append(Player(name.capitalize(), 1000))
+            else:
+                new_players = 0
+                while new_players + len(self.table) <= 6 and new_players > 0:
+                    try:
+                        new_players = int(input("How many more players would like to play? (1-6): "))
+                    except ValueError:
+                        print("Please enter an integer!")
+                for players in range(new_players):
+                    name = input("What is the name of the player?: ")
+                    self.table.append(Player(name.capitalize(), 1000))
+        else:
+            print("Sorry, the table is full!")
+
+    def play_round(self):
+        for n in range(2):
+            self.dealer.add_cards(new_game.shoe.deal_one())
+            for player in self.table:
+                player.add_cards(new_game.shoe.deal_one())
+        for player in self.table:
+            player.bet()
+        for player in self.table:
+            print(f"Dealer's Hand: Unknown Card, {new_game.dealer.hand[0]}")
+            player.play_hand()
+        self.dealer.play_hand()
+        for player in self.table:
+            if win_check(player.true_hand_value(), self.dealer.true_hand_value()):
+                player.winnings()
+            else:
+                print(f"Sorry {player.name}, you have lost your stake!")
+        for player in self.table:
+            player.hand = []
+        self.dealer.hand = []
+
+    def play_game(self):
+        print("Welcome to Blackjack!")
+        self.add_players()
+        self.shoe.shuffle()
+        game_on = True
+        while game_on:
+            if len(self.table) > 0:
+                self.play_round()
+                for player in self.table:
+                    print(f"{player.name} Balance: {player.balance}")
+                self.remove_players()
+                new_player = input("Would any new players like to sit? (Y/N): ")
+                if new_player.upper() == "Y":
+                    self.add_players()
+                replay = input("Would you like to play another hand? (Y/N): ")
+                if replay.upper() == 'Y':
+                    pass
+                else:
+                    break
+            else:
+                print("There are no players at the table!")
+                break
 
 
 def win_check(player_score, dealer_score):
@@ -113,52 +223,5 @@ def win_check(player_score, dealer_score):
         return False
 
 
-player = Player('Matt')
-dealer = Dealer('Dealer')
-bank = Bank("Matt's Bank", 500)
-new_shoe = Shoe()
-new_shoe.shuffle()
-game_on = True
-print("Let's play some Blackjack!")
-print(f"{bank.name} contains: {bank.balance}")
-while game_on:
-    for x in range(2):
-        player.add_cards(new_shoe.deal_one())
-        dealer.add_cards(new_shoe.deal_one())
-    print(f"Dealer's Hand: Unknown Card, {dealer.hand[0]}")
-    print(f"Your Cards: {player.hand[0]},{player.hand[1]}")
-    pot = bank.bet()
-    print(f"Pot = {pot}")
-    print(f"Your hand value is {player.true_hand_value()}")
-    player_hand_on = True
-    while player_hand_on:
-        if player.true_hand_value() == 21:
-            print("You have 21!")
-            break
-        elif 0 < player.true_hand_value() < 21:
-            decision = input("Would you like to draw another card?: ")
-            if decision.upper() == 'Y':
-                player.add_cards(new_shoe.deal_one())
-                for card in player.hand:
-                    print(card)
-            else:
-                break
-        else:
-            break
-    print(f"Dealer's Hand: {dealer.hand[1]}, {dealer.hand[0]}")
-    dealer.play_hand()
-    print(f" The value of {player.name}'s hand is {player.true_hand_value()}")
-    print(f" The value of the Dealer's hand is {dealer.true_hand_value()}")
-    if win_check(player.true_hand_value(), dealer.true_hand_value()):
-        print(f"Well Done {player.name}! You have beat the dealer!")
-        bank.winnings(pot)
-    else:
-        print(f"The Dealer has Won!! Better luck next time, {player.name}!")
-    print(f"{bank.name} contains: {bank.balance}")
-    play_again = input("Would you like to play another hand? (Y/N): ")
-    if play_again.upper() == 'Y':
-        player.hand = []
-        dealer.hand = []
-    else:
-        game_on = False
-        print("Thanks for playing!!")
+new_game = Blackjack()
+new_game.play_game()
