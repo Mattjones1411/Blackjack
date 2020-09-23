@@ -136,7 +136,7 @@ class Player:
 
     def split(self):
         for hands in self.hands:
-            if hands.cards[0].rank == hands.cards[1].rank:
+            if hands.cards[0].rank == hands.cards[1].rank and len(hands) == 2:
                 for card in hands.cards:
                     print(card)
                 split_decision = input("Would you like to split these cards?: ")
