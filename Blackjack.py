@@ -80,13 +80,10 @@ class Hand:
                 break
 
     def win_check(self, dealer_score):
-        if self.true_hand_value() == 0:
-            return 'N'
-        elif self.true_hand_value() == 21:
+        hand_value = self.true_hand_value()
+        if hand_value == 21 or hand_value > dealer_score:
             return 'Y'
-        elif self.true_hand_value() > dealer_score:
-            return 'Y'
-        elif self.true_hand_value() == dealer_score:
+        elif hand_value == dealer_score and hand_value > 0:
             return 'D'
         else:
             return 'N'
@@ -103,55 +100,49 @@ class Player:
         return self.name
 
     def winnings(self):
-        for hands in self.hands:
-            if hands.win_check(new_game.dealer.true_hand_value()) == 'Y':
-                print(f"Congratulations {self.name}! You have won double your stake!")
-                self.balance += hands.bet
-            elif hands.win_check(new_game.dealer.true_hand_value()) == 'D':
+        for hand in self.hands:
+            if hand.win_check(new_game.dealer.true_hand_value()) == 'Y':
+                print(f"Congratulations {self.name}! You have won {hand.bet}!")
+                self.balance += hand.bet
+            elif hand.win_check(new_game.dealer.true_hand_value()) == 'D':
                 print("It is a tie! Stake returned!")
             else:
                 print(f"Unlucky {self.name}! You have lost your stake!")
-                self.balance -= hands.bet
+                self.balance -= hand.bet
 
     def bet(self):
-        bet = True
-        while bet:
-            for hands in self.hands:
-                try:
-                    amount = int(input(f"{self.name} how much would you like to bet?: "))
-                    if amount < 0:
-                        print("You must enter a positive number!")
-                        while amount <= 0:
-                            amount = int(input(f"{self.name}, how much would you like to bet?: "))
-                    if amount <= self.balance:
-                        hands.bet = amount
-                        bet = False
-                    elif amount > self.balance:
-                        print(f"{self.name} do not have enough in your bank for that bet!")
-                        print(f"{self.name} account contains {self.balance}")
-                    else:
-                        print('That is not a valid bet!')
-                except ValueError:
-                    print("This is not a valid bet, try entering a number!")
+        while True:
+            try:
+                amount = int(input(f"{self.name} how much would you like to bet?: "))
+                if amount < 0:
+                    print("You must enter a positive number!")
+                    while amount <= 0:
+                        amount = int(input(f"{self.name}, how much would you like to bet?: "))
+                if amount <= self.balance:
+                    self.hands[0].bet = amount
+                    return
+                elif amount > self.balance:
+                    print(f"{self.name} do not have enough in your bank for that bet!")
+                    print(f"{self.name} account contains {self.balance}")
+                else:
+                    print('That is not a valid bet!')
+            except ValueError:
+                print("This is not a valid bet, try entering a number!")
 
-    def split(self):
-        for hands in self.hands:
-            if hands.cards[0].rank == hands.cards[1].rank and len(hands) == 2:
-                for card in hands.cards:
-                    print(card)
-                split_decision = input("Would you like to split these cards?: ")
-                if split_decision.upper() == 'Y':
-                    new_hand_one = Hand()
-                    new_hand_two = Hand()
-                    new_hand_one.bet = hands.bet
-                    new_hand_two.bet = hands.bet
-                    new_hand_one.cards.append(hands.cards.pop())
-                    new_hand_two.cards.append(hands.cards.pop())
-                    new_hand_one.add_cards(new_game.shoe.deal_one())
-                    new_hand_two.add_cards(new_game.shoe.deal_one())
-                    self.hands.pop()
-                    self.hands.append(new_hand_one)
-                    self.hands.append(new_hand_two)
+    def split(self, hand):
+        while hand.cards[0].rank == hand.cards[1].rank and len(hand.cards) == 2:
+            for card in hand.cards:
+                print(card)
+            split_decision = input("Would you like to split these cards?: ")
+            if split_decision.upper() == 'Y':
+                for i in range(1):
+                    new_hand = Hand()
+                    new_hand.bet = hand.bet
+                    new_hand.cards.append(hand.cards.pop())
+                    new_hand.add_cards(new_game.shoe.deal_one())
+                    index_position = self.hands.index(hand)
+                    self.hands.insert(index_position + 1, new_hand)
+                hand.add_cards(new_game.shoe.deal_one())
 
 
 class Dealer(Hand):
@@ -229,11 +220,10 @@ class Blackjack:
             player.hands.append(new_hand)
         for player in self.table:
             player.bet()
-        for player in self.table:
-            player.split()
-            for hands in player.hands:
+            for hand in player.hands:
                 print(f"Dealer's Hand: Unknown Card, {new_game.dealer.cards[0]}")
-                hands.play_hand()
+                player.split(hand)
+                hand.play_hand()
         self.dealer.play_hand()
         for player in self.table:
             player.winnings()
@@ -243,7 +233,6 @@ class Blackjack:
     def play_game(self):
         print("Welcome to Blackjack!")
         self.add_players()
-        self.shoe.shuffle()
         game_on = True
         while game_on:
             if len(self.table) > 0:
