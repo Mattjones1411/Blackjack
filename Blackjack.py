@@ -83,7 +83,7 @@ class Hand:
                         break
                 else:
                     break
-        if isinstance(self.master, Dealer):
+        elif isinstance(self.master, Dealer):
             print("Dealer's Turn")
             for card in self.cards:
                 print(card)
@@ -256,7 +256,7 @@ class Blackjack:
                     print(f"{player.name} Balance: {player.balance}")
                 decision = 'Null'
                 while not decision.upper() == 'P' or 'E':
-                    decision = input("Add players (A), Remove players (R), play again (P) or Exit game(E)?: ")
+                    decision = input("Add Players (A), Remove Players (R), Play Again (P) or Exit Game(E)?: ")
                     if decision.upper() == 'R':
                         self.remove_players()
                     elif decision.upper() == 'A':
