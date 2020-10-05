@@ -150,10 +150,11 @@ class Player(Person):
 
     def winnings(self):
         for hand in self.hands:
-            if hand.win_check(self.game.dealer.hands[0].true_hand_value()) == 'Y':
+            hand_value = self.game.dealer.hands[0].true_hand_value()
+            if hand.win_check(hand_value) == 'Y':
                 print(f"Congratulations {self.name}! You have won {hand.bet}!")
                 self.balance += hand.bet
-            elif hand.win_check(self.game.dealer.hands[0].true_hand_value()) == 'D':
+            elif hand.win_check(hand_value) == 'D':
                 print("It is a tie! Stake returned!")
             else:
                 print(f"Unlucky {self.name}! You have lost your stake!")
