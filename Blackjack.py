@@ -61,7 +61,7 @@ class Hand:
 
     def play_hand(self):
         max_hand_value = 21
-        dealer_fold_value = 17
+        dealer_stick_value = 17
         if isinstance(self.master, Player):
             for card in self.cards:
                 print(card)
@@ -87,7 +87,7 @@ class Hand:
             for card in self.cards:
                 print(card)
             print(f"Dealer hand value is {self.true_hand_value()}")
-            while 0 < self.true_hand_value() < dealer_fold_value:
+            while 0 < self.true_hand_value() < dealer_stick_value:
                 self.add_cards(self.game.shoe.deal_one())
                 for card in self.cards:
                     print(card)
@@ -162,9 +162,7 @@ class Player(Person):
                 amount = int(input(f"{self.name} how much would you like to bet?: "))
                 if amount < 0:
                     print("You must enter a positive number!")
-                    while amount <= 0:
-                        amount = int(input(f"{self.name}, how much would you like to bet?: "))
-                if amount <= self.balance:
+                elif amount <= self.balance:
                     self.hands[0].bet = amount
                     return
                 elif amount > self.balance:
@@ -243,7 +241,7 @@ class Blackjack:
 
     def end_of_round_decision(self):
         number_of_players = len(self.table)
-        if 0 < number_of_players < 6:
+        if 0 < number_of_players < self.table_length:
             while True:
                 decision = input("Add Players (A), Remove Players (R), Play Again (P) or Exit Game(E)?: ")
                 if decision.upper() == 'R':
@@ -259,7 +257,7 @@ class Blackjack:
                 else:
                     print('Please select an option from the list!')
                     pass
-        elif number_of_players == 6:
+        elif number_of_players == self.table_length:
             while True:
                 decision = input("Remove Players (R), Play Again (P) or Exit Game(E)?: ")
                 if decision.upper() == 'R':
@@ -288,10 +286,11 @@ class Blackjack:
         print("Welcome to Blackjack!")
         self.add_players()
         random.shuffle(self.shoe.shoe)
-        self.play_round()
-        for player in self.table:
-            print(f"{player.name} Balance: {player.balance}")
-        self.end_of_round_decision()
+        while True:
+            self.play_round()
+            for player in self.table:
+                print(f"{player.name} Balance: {player.balance}")
+            self.end_of_round_decision()
 
 
 new_game = Blackjack()
