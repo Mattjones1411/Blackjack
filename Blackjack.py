@@ -62,23 +62,22 @@ class Hand:
     def play_hand(self):
         max_hand_value = 21
         dealer_fold_value = 17
-        hand_value = self.true_hand_value()
         if isinstance(self.master, Player):
             for card in self.cards:
                 print(card)
-            print(f"The hand value is: {hand_value}")
+            print(f"The hand value is: {self.true_hand_value()}")
             player_hand_on = True
             while player_hand_on:
-                if hand_value == max_hand_value:
+                if self.true_hand_value() == max_hand_value:
                     print("You have 21!")
                     break
-                elif 0 < hand_value < max_hand_value:
+                elif 0 < self.true_hand_value() < max_hand_value:
                     player_decision = input("Would you like to draw another card?: ")
                     if player_decision.upper() == 'Y':
                         self.add_cards(self.game.shoe.deal_one())
                         for card in self.cards:
                             print(card)
-                        print(f"The hand value is: {hand_value}")
+                        print(f"The hand value is: {self.true_hand_value()}")
                     else:
                         break
                 else:
@@ -87,17 +86,14 @@ class Hand:
             print("Dealer's Turn")
             for card in self.cards:
                 print(card)
-            print(f"Dealer hand value is {hand_value}")
-            while 0 < hand_value < dealer_fold_value:
+            print(f"Dealer hand value is {self.true_hand_value()}")
+            while 0 < self.true_hand_value() < dealer_fold_value:
                 self.add_cards(self.game.shoe.deal_one())
                 for card in self.cards:
                     print(card)
-                print(f"Dealer hand value is {hand_value}")
-            if hand_value <= max_hand_value:
-                return hand_value
-            else:
+                print(f"Dealer hand value is {self.true_hand_value()}")
+            if self.true_hand_value() > max_hand_value:
                 print("Dealer is Bust!!")
-                return 0
 
     def split(self):
         while self.cards[0].rank == self.cards[1].rank and len(self.cards) == 2:
@@ -186,6 +182,7 @@ class Blackjack:
         self.shoe = Shoe()
         self.dealer = Dealer("Dealer", self)
         self.table = []
+        self.table_length = 6
 
     def remove_players(self):
         removal = input("Would any players like to stand up? (Y/N): ")
@@ -197,13 +194,12 @@ class Blackjack:
             removal = input("Would another player like to stand up? (Y/N): ")
 
     def add_players(self):
-        table_length = 6
         number_of_players = len(self.table)
-        seats_left = 6 - number_of_players
-        if number_of_players < table_length:
+        seats_left = self.table_length - number_of_players
+        if number_of_players < self.table_length:
             if number_of_players == 0:
                 try:
-                    while number_of_players == 0 or number_of_players > table_length:
+                    while number_of_players == 0 or number_of_players > self.table_length:
                         number_of_players = int(input("How many players would like to play? (1-6): "))
                 except ValueError:
                     print("Please enter an integer!")
@@ -212,7 +208,7 @@ class Blackjack:
                     self.table.append(Player(name.capitalize(), self, 1000))
             else:
                 new_players = 0
-                while new_players + number_of_players >= table_length or new_players <= 0:
+                while new_players + number_of_players >= self.table_length or new_players <= 0:
                     try:
                         new_players = int(input(f"How many more players would like to play? (1-{seats_left}): "))
                     except ValueError:
@@ -245,30 +241,57 @@ class Blackjack:
             player.hands = []
         self.dealer.hands = []
 
+    def end_of_round_decision(self):
+        number_of_players = len(self.table)
+        if 0 < number_of_players < 6:
+            while True:
+                decision = input("Add Players (A), Remove Players (R), Play Again (P) or Exit Game(E)?: ")
+                if decision.upper() == 'R':
+                    self.remove_players()
+                    self.end_of_round_decision()
+                elif decision.upper() == 'A':
+                    self.add_players()
+                    self.end_of_round_decision()
+                elif decision.upper() == 'P':
+                    break
+                elif decision.upper() == 'E':
+                    exit(0)
+                else:
+                    print('Please select an option from the list!')
+                    pass
+        elif number_of_players == 6:
+            while True:
+                decision = input("Remove Players (R), Play Again (P) or Exit Game(E)?: ")
+                if decision.upper() == 'R':
+                    self.remove_players()
+                    self.end_of_round_decision()
+                elif decision.upper() == 'P':
+                    break
+                elif decision.upper() == 'E':
+                    exit(0)
+                else:
+                    print('Please select an option from the list!')
+                    pass
+        else:
+            while True:
+                decision = input("Add Players (A) or Exit Game(E)?: ")
+                if decision.upper() == 'A':
+                    self.add_players()
+                    self.end_of_round_decision()
+                elif decision.upper() == 'E':
+                    exit(0)
+                else:
+                    print('Please select an option from the list!')
+                    pass
+
     def play_game(self):
         print("Welcome to Blackjack!")
         self.add_players()
         random.shuffle(self.shoe.shoe)
-        game_on = True
-        while game_on:
-            if len(self.table) > 0:
-                self.play_round()
-                for player in self.table:
-                    print(f"{player.name} Balance: {player.balance}")
-                decision = 'Null'
-                while not decision.upper() == 'P' or 'E':
-                    decision = input("Add Players (A), Remove Players (R), Play Again (P) or Exit Game(E)?: ")
-                    if decision.upper() == 'R':
-                        self.remove_players()
-                    elif decision.upper() == 'A':
-                        self.add_players()
-                    else:
-                        break
-                if decision.upper() == 'E':
-                    break
-            else:
-                print("There are no players at the table!")
-                break
+        self.play_round()
+        for player in self.table:
+            print(f"{player.name} Balance: {player.balance}")
+        self.end_of_round_decision()
 
 
 new_game = Blackjack()
