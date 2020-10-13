@@ -181,13 +181,22 @@ class Blackjack:
     def remove_players(self):
         number_of_players = len(self.table)
         if number_of_players > 0:
-            removal = input("Would any players like to stand up? (Y/N): ")
-            while removal.upper() == "Y":
-                for player in self.table:
-                    print(f"{str(player)} is at seat {self.table.index(player) + 1}")
-                player_removal = int(input("Which player would like to stand up? (Seat Number): "))
+            for player in self.table:
+                print(f"{str(player)} is at seat {self.table.index(player) + 1}")
+            player_removal = int(input("Which seat number would like to stand up?: "))
+            try:
                 self.table.pop(player_removal - 1)
-                removal = input("Would another player like to stand up? (Y/N): ")
+            except IndexError:
+                print('There is no player at this seat! Please pick an occupied seat!')
+                self.remove_players()
+            except ValueError:
+                print('Please enter the seat number of the player who wishes to stand up!')
+                self.remove_players()
+            remove_another = input("Would another player like to stand up? (Y/N): ")
+            if remove_another.upper() == 'Y':
+                self.remove_players()
+            else:
+                pass
         else:
             print("The table is empty!")
 
