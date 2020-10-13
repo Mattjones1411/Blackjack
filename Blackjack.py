@@ -40,8 +40,7 @@ class Hand:
         self.bet = 0
 
     def __str__(self):
-        for card in self.cards:
-            print(card)
+        return ', '.join(map(str, self.cards))
 
     def add_cards(self, new_cards):
         self.cards.append(new_cards)
@@ -63,8 +62,8 @@ class Hand:
         max_hand_value = 21
         dealer_stick_value = 17
         if isinstance(self.master, Player):
-            for card in self.cards:
-                print(card)
+            print(self)
+            self.split()
             print(f"The hand value is: {self.true_hand_value()}")
             player_hand_on = True
             while player_hand_on:
@@ -75,8 +74,7 @@ class Hand:
                     player_decision = input("Would you like to draw another card?: ")
                     if player_decision.upper() == 'Y':
                         self.add_cards(self.game.shoe.deal_one())
-                        for card in self.cards:
-                            print(card)
+                        print(self)
                         print(f"The hand value is: {self.true_hand_value()}")
                     else:
                         break
@@ -84,21 +82,17 @@ class Hand:
                     break
         elif isinstance(self.master, Dealer):
             print("Dealer's Turn")
-            for card in self.cards:
-                print(card)
+            print(self)
             print(f"Dealer hand value is {self.true_hand_value()}")
             while 0 < self.true_hand_value() < dealer_stick_value:
                 self.add_cards(self.game.shoe.deal_one())
-                for card in self.cards:
-                    print(card)
+                print(self)
                 print(f"Dealer hand value is {self.true_hand_value()}")
             if self.true_hand_value() > max_hand_value:
                 print("Dealer is Bust!!")
 
     def split(self):
         while self.cards[0].rank == self.cards[1].rank and len(self.cards) == 2:
-            for card in self.cards:
-                print(card)
             split_decision = input("Would you like to split these cards?: ")
             if split_decision.upper() == 'Y':
                 new_hand = Hand(self.game, self.master)
@@ -108,6 +102,8 @@ class Hand:
                 index_position = self.master.hands.index(self)
                 self.master.hands.insert(index_position + 1, new_hand)
                 self.add_cards(self.game.shoe.deal_one())
+            else:
+                break
 
     def win_check(self, dealer_score):
         max_hand_value = 21
@@ -183,13 +179,17 @@ class Blackjack:
         self.table_length = 6
 
     def remove_players(self):
-        removal = input("Would any players like to stand up? (Y/N): ")
-        while removal.upper() == "Y":
-            for player in self.table:
-                print(f"{str(player)} is at seat {self.table.index(player) + 1}")
-            player_removal = int(input("Which player would like to stand up? (Seat Number): "))
-            self.table.pop(player_removal - 1)
-            removal = input("Would another player like to stand up? (Y/N): ")
+        number_of_players = len(self.table)
+        if number_of_players > 0:
+            removal = input("Would any players like to stand up? (Y/N): ")
+            while removal.upper() == "Y":
+                for player in self.table:
+                    print(f"{str(player)} is at seat {self.table.index(player) + 1}")
+                player_removal = int(input("Which player would like to stand up? (Seat Number): "))
+                self.table.pop(player_removal - 1)
+                removal = input("Would another player like to stand up? (Y/N): ")
+        else:
+            print("The table is empty!")
 
     def add_players(self):
         number_of_players = len(self.table)
@@ -231,7 +231,6 @@ class Blackjack:
         for player in self.table:
             for hand in player.hands:
                 print(f"Dealer's Hand: Unknown Card, {self.dealer.hands[0].cards[0]}")
-                hand.split()
                 hand.play_hand()
         self.dealer.hands[0].play_hand()
         for player in self.table:
