@@ -244,8 +244,8 @@ class Player(Person):
                     self.hands[0].bet = amount
                     return
                 elif amount > self.balance:
-                    print(f"{self.name} do not have enough in your bank for that bet!")
-                    print(f"{self.name} account contains {self.balance}")
+                    print(f"{self.name} you do not have enough in your bank for that bet!")
+                    print(f"{self.name}'s account contains {self.balance}")
                 else:
                     print('That is not a valid bet!')
             except ValueError:
@@ -301,17 +301,17 @@ class Blackjack:
         seats_left = self.table_length - number_of_players
         if number_of_players < self.table_length:
             if number_of_players == 0:
-                try:
-                    while number_of_players == 0 or number_of_players > self.table_length:
+                while number_of_players == 0 or number_of_players > self.table_length:
+                    try:
                         number_of_players = int(input("How many players would like to play? (1-6): "))
-                except ValueError:
-                    print("Please enter an integer!")
+                    except ValueError:
+                        print("Please enter an integer!")
                 for size in range(number_of_players):
                     name = input("What is the name of the player?: ")
                     self.table.append(Player(name.capitalize(), self, 1000))
             else:
                 new_players = 0
-                while new_players + number_of_players >= self.table_length or new_players <= 0:
+                while new_players + number_of_players > self.table_length or new_players <= 0:
                     try:
                         new_players = int(input(f"How many more players would like to play? (1-{seats_left}): "))
                     except ValueError:

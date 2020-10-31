@@ -1,6 +1,6 @@
 from Blackjack import *
 from copy import deepcopy
-import pytest_mock
+import mock
 
 
 # Testing the Card Class
@@ -109,8 +109,7 @@ def test_play_hand(monkeypatch):
 
 def test_Person():
     new_person = Person('Matt')
-    assert str(new_person) == 'Matt'
-    assert type(new_person.hands) == list
+    assert str(new_person) == 'Matt' and type(new_person.hands) == list
 
 
 def test_Dealer():
@@ -129,14 +128,16 @@ def test_Player():
     assert type(test_player.hands) == list
 
 
-def test_bet(monkeypatch):
-    monkeypatch.setattr('builtins.input', lambda _: '100')
+def test_bet(capsys):
     test_game = Blackjack()
     test_player = Player('Matt', test_game)
     new_hand = Hand(test_game, test_player)
     test_player.hands.append(new_hand)
-    test_player.bet()
+    with mock.patch('builtins.input', side_effect=["a", "-50", "100"]):
+        test_player.bet()
     assert test_player.hands[0].bet == 100
+    out, err = capsys.readouterr()
+    assert "You must enter a positive number!" in out and "This is not a valid bet, try entering a number!" in out
 
 
 def test_winnings():
@@ -156,30 +157,38 @@ def test_winnings():
 
 def test_Blackjack():
     test_game = Blackjack()
-    assert isinstance(test_game.shoe, Shoe)
-    assert isinstance(test_game.dealer, Dealer)
-    assert type(test_game.table) == list
+    assert isinstance(test_game.shoe, Shoe) and isinstance(test_game.dealer, Dealer) and type(test_game.table) == list
     assert test_game.table_length == 6
 
 
-def test_remove_players(mocker):
+def test_remove_players(capsys):
     test_game = Blackjack()
     test_game.table.append(Player('Matt', test_game))
     assert len(test_game.table) == 1
-    with mocker.patch('builtins.input', side_effect=["1", "N"]):
+    with mock.patch('builtins.input', side_effect=["1", "N"]):
         test_game.remove_players()
     assert len(test_game.table) == 0
     test_game.table.append(Player('Matt', test_game))
-    test_game.table.append(Player('Matt', test_game))
+    test_game.table.append(Player('Dan', test_game))
     assert len(test_game.table) == 2
-    with mocker.patch('builtins.input', side_effect=["1", "Y", "1", "N"]):
+    with mock.patch('builtins.input', side_effect=["1", "Y", "1", "Y"]):
         test_game.remove_players()
     assert len(test_game.table) == 0
+    out, err = capsys.readouterr()
+    assert "The table is empty!" in out
 
 
-def test_add_players(monkeypatch):
+def test_add_players(capsys):
     test_game = Blackjack()
     assert len(test_game.table) == 0
-    monkeypatch.setattr('builtins.input', lambda _: '1')
+    with mock.patch('builtins.input', side_effect=["a", "1", "Matt"]):
+        test_game.add_players()
+    out, err = capsys.readouterr()
+    assert "Please enter an integer!" in out
+    assert isinstance(test_game.table[0], Player) and test_game.table[0].name == 'Matt' and len(test_game.table) == 1
+    with mock.patch('builtins.input', side_effect=["6", "5", "Dave", "Dan", "Joe", "Jai", "Rob"]):
+        test_game.add_players()
+    assert len(test_game.table) == 6
     test_game.add_players()
-    assert len(test_game.table) == 1
+    out, err = capsys.readouterr()
+    assert "Sorry, the table is full!" in out
