@@ -4,13 +4,13 @@ import mock
 
 
 # Testing the Card Class
-def test_Card():
+def test_card():
     new_card = Card('Diamonds', 'Two')
     assert str(new_card) == 'Two of Diamonds'
 
 
 # Testing the Shoe Class and methods
-def test_Shoe():
+def test_shoe():
     new_shoe = Shoe()
     assert len(new_shoe.deck) == 52
     assert len(new_shoe.shoe) == len(new_shoe.deck) * new_shoe.number_of_decks
@@ -34,7 +34,7 @@ def test_deal_one():
 
 
 # Testing the Hand Class and methods
-def test_Hand():
+def test_hand():
     test_game = Blackjack()
     test_player = Player('Matt', test_game)
     new_hand = Hand(test_game, test_player)
@@ -107,19 +107,19 @@ def test_play_hand(monkeypatch):
     assert 17 <= dealer_hand.hand_value(dealer_hand.cards) <= 21 or dealer_hand.hand_value(dealer_hand.cards) == 0
 
 
-def test_Person():
+def test_person():
     new_person = Person('Matt')
     assert str(new_person) == 'Matt' and type(new_person.hands) == list
 
 
-def test_Dealer():
+def test_dealer():
     test_dealer_game = Blackjack()
     assert str(test_dealer_game.dealer) == 'Dealer'
     assert test_dealer_game.dealer.game == test_dealer_game
     assert type(test_dealer_game.dealer.hands) == list
 
 
-def test_Player():
+def test_player():
     test_player_game = Blackjack()
     test_player = Player('Matt', test_player_game)
     assert str(test_player) == 'Matt'
@@ -133,11 +133,11 @@ def test_bet(capsys):
     test_player = Player('Matt', test_game)
     new_hand = Hand(test_game, test_player)
     test_player.hands.append(new_hand)
-    with mock.patch('builtins.input', side_effect=["a", "-50", "100"]):
+    with mock.patch('builtins.input', side_effect=["a", "-50", "0", "100"]):
         test_player.bet()
     assert test_player.hands[0].bet == 100
     out, err = capsys.readouterr()
-    assert "You must enter a positive number!" in out and "This is not a valid bet, try entering a number!" in out
+    assert "You must enter a positive non-zero number!" in out and "This is not a valid bet, try entering a number!" in out
 
 
 def test_winnings():
@@ -155,7 +155,7 @@ def test_winnings():
     assert test_player.balance == 1100
 
 
-def test_Blackjack():
+def test_blackjack():
     test_game = Blackjack()
     assert isinstance(test_game.shoe, Shoe) and isinstance(test_game.dealer, Dealer) and type(test_game.table) == list
     assert test_game.table_length == 6

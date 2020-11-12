@@ -73,7 +73,7 @@ class Hand:
         """
         Takes in a card and appends to the end of self.cards.
         :param new_cards: the new card(s) to be added.
-        :return: The hand with the new card appended to the end.
+        :return: None.
         """
         self.cards.append(new_cards)
 
@@ -99,10 +99,12 @@ class Hand:
     def hand_splittable(self):
         """
         Evaluates whether a hand is splittable
-        :return:
+        :return: Boolean, True if hand splittable.
         """
         if self.cards[0].rank == self.cards[1].rank and len(self.cards) == 2:
             return True
+        else:
+            return False
 
     def split(self):
         """
@@ -140,7 +142,7 @@ class Hand:
     def play_hand(self):
         """
         Plays a hand one of two ways based on whether the hand belongs to a dealer or a player.
-        :return: No return.
+        :return: None.
         """
         max_hand_value = 21
         dealer_stick_value = 17
@@ -233,13 +235,13 @@ class Player(Person):
     def bet(self):
         """
         Asks the player to make a bet on their first hand.
-        :return: The players hand will now have a positive self.bet attribute.
+        :return: Positive non-zero hand.bet value.
         """
         while True:
             try:
                 amount = int(input(f"{self.name} how much would you like to bet?: "))
-                if amount < 0:
-                    print("You must enter a positive number!")
+                if amount <= 0:
+                    print("You must enter a positive non-zero number!")
                 elif amount <= self.balance:
                     self.hands[0].bet = amount
                     return
@@ -325,7 +327,7 @@ class Blackjack:
     def play_round(self):
         """
         Plays one round of blackjack for all players at the table and a dealer.
-        :return: no return
+        :return: None.
         """
         dealer_hand = Hand(self, self.dealer)
         self.dealer.hands.append(dealer_hand)
@@ -399,7 +401,7 @@ class Blackjack:
     def play_game(self):
         """
         Called to begin the game. Keeps the players in a loop till Exit is called in the self.end_of_round_decision.
-        :return: No Return
+        :return: None.
         """
         print("Welcome to Blackjack!")
         self.add_players()
