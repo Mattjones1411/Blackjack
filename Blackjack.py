@@ -153,7 +153,9 @@ class Hand:
             print(f"The hand value is: {self.hand_value(self.cards)}")
             player_hand_on = True
             while player_hand_on:
-                if self.hand_value(self.cards) == max_hand_value:
+                if self.hand_value(self.cards) == max_hand_value and len(self.cards) == 2:
+                    print("Winner Winner Chicken Dinner!!")
+                elif self.hand_value(self.cards) == max_hand_value:
                     print("You have 21!")
                     break
                 elif 0 < self.hand_value(self.cards) < max_hand_value:
@@ -223,7 +225,10 @@ class Player(Person):
         for hand in self.hands:
             hand_value = hand.hand_value(hand.cards)
             dealer_value = self.game.dealer.hands[0].hand_value(self.game.dealer.hands[0].cards)
-            if hand.win_check(hand_value, dealer_value) == 'Y':
+            if hand.hand_value(hand.cards) == 21 and len(hand.cards) == 2:
+                print(f"Congratulations {self.name}! You have won {(hand.bet*2.5)}!")
+                self.balance += (hand.bet * 2.5)
+            elif hand.win_check(hand_value, dealer_value) == 'Y':
                 print(f"Congratulations {self.name}! You have won {hand.bet}!")
                 self.balance += hand.bet
             elif hand.win_check(hand_value, dealer_value) == 'D':
