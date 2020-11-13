@@ -157,11 +157,17 @@ class Hand:
                     print("You have 21!")
                     break
                 elif 0 < self.hand_value(self.cards) < max_hand_value:
-                    player_decision = input("Would you like to draw another card?: ")
-                    if player_decision.upper() == 'Y':
+                    player_decision = input("Stick (S), Hit (H) or Double Down (D): ")
+                    if player_decision.upper() == 'H':
                         self.add_cards(self.game.shoe.deal_one())
                         print(self)
                         print(f"The hand value is: {self.hand_value(self.cards)}")
+                    elif player_decision.upper() == 'D':
+                        self.bet += self.bet
+                        self.add_cards(self.game.shoe.deal_one())
+                        print(self)
+                        print(f"The hand value is: {self.hand_value(self.cards)}")
+                        break
                     else:
                         break
                 else:
