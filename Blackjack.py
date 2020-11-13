@@ -163,10 +163,11 @@ class Hand:
                         print(self)
                         print(f"The hand value is: {self.hand_value(self.cards)}")
                     elif player_decision.upper() == 'D':
-                        self.bet += self.bet
+                        self.bet = self.bet * 2
                         self.add_cards(self.game.shoe.deal_one())
                         print(self)
                         print(f"The hand value is: {self.hand_value(self.cards)}")
+                        print(f"{self.master.name}'s bet for this hand is: {self.bet}")
                         break
                     else:
                         break
