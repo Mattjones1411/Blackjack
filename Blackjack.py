@@ -269,7 +269,7 @@ class Player(Person):
 class Blackjack:
     """
     The game class, this is where the game is played. Instantiates with a Shoe, Dealer, A Table length and a Table (list
-    of players
+    of players)
     """
 
     def __init__(self):
@@ -321,7 +321,7 @@ class Blackjack:
                     except ValueError:
                         print("Please enter an integer!")
                 for size in range(number_of_players):
-                    name = input("What is the name of the player?: ")
+                    name = input(f"What is the name of Player {size + 1}?: ")
                     self.table.append(Player(name.capitalize(), self, 1000))
             else:
                 new_players = 0
@@ -331,7 +331,7 @@ class Blackjack:
                     except ValueError:
                         print("Please enter an integer!")
                 for players in range(new_players):
-                    name = input("What is the name of the player?: ")
+                    name = input(f"What is the name of Player {players + 1}?: ")
                     self.table.append(Player(name.capitalize(), self, 1000))
         else:
             print("Sorry, the table is full!")
