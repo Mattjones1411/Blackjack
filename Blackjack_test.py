@@ -91,8 +91,7 @@ def test_split(monkeypatch):
     assert str(test_player.hands[1].cards[0]) == "Five of Hearts"
 
 
-def test_play_hand(monkeypatch):
-    monkeypatch.setattr('builtins.input', lambda _: "Y")
+def test_play_hand():
     test_game = Blackjack()
     test_player = Player('Matt', test_game)
     new_hand = Hand(test_game, test_player)
@@ -101,8 +100,17 @@ def test_play_hand(monkeypatch):
         dealer_hand.add_cards(test_game.shoe.deal_one())
     new_hand.add_cards(Card('Hearts', 'Six'))
     new_hand.add_cards(Card('Hearts', 'Five'))
-    new_hand.play_hand()
+    with mock.patch('builtins.input', side_effect=["H"]):
+        new_hand.play_hand()
     assert len(new_hand.cards) > 2
+    new_hand.bet = 100
+    new_hand.cards = []
+    new_hand.add_cards(Card('Hearts', 'Six'))
+    new_hand.add_cards(Card('Hearts', 'Five'))
+    with mock.patch('builtins.input', side_effect=["D"]):
+        new_hand.play_hand()
+    assert len(new_hand.cards) == 3
+    assert new_hand.bet == 200
     dealer_hand.play_hand()
     assert 17 <= dealer_hand.hand_value(dealer_hand.cards) <= 21 or dealer_hand.hand_value(dealer_hand.cards) == 0
 
