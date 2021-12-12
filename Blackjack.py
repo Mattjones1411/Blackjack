@@ -320,8 +320,8 @@ class Blackjack:
                         number_of_players = int(input("How many players would like to play? (1-6): "))
                     except ValueError:
                         print("Please enter an integer!")
-                for size in range(number_of_players):
-                    name = input(f"What is the name of Player {size + 1}?: ")
+                for player_index in range(number_of_players):
+                    name = input(f"What is the name of Player {player_index + 1}?: ")
                     self.table.append(Player(name.capitalize(), self, 1000))
             else:
                 new_players = 0
@@ -330,8 +330,8 @@ class Blackjack:
                         new_players = int(input(f"How many more players would like to play? (1-{seats_left}): "))
                     except ValueError:
                         print("Please enter an integer!")
-                for players in range(new_players):
-                    name = input(f"What is the name of Player {players + 1}?: ")
+                for player_index in range(new_players):
+                    name = input(f"What is the name of Player {player_index + 1}?: ")
                     self.table.append(Player(name.capitalize(), self, 1000))
         else:
             print("Sorry, the table is full!")
