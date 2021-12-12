@@ -153,6 +153,13 @@ def test_winnings():
     dealer_hand.cards = [Card('Hearts', 'Ten'), Card('Hearts', 'Nine')]
     test_player.winnings()
     assert test_player.balance == 1100
+    new_hand.cards = [Card('Diamonds', 'Jack'), Card('Clubs', 'Ace')]
+    test_player.balance = 1000
+    test_player.winnings()
+    assert test_player.balance == 1250
+
+
+
 
 
 def test_blackjack():
